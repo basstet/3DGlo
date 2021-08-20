@@ -72,7 +72,7 @@ window.addEventListener('DOMContentLoaded', () => {
     popupBtn.forEach(elem => {
       elem.addEventListener('click', () => {
         popup.style.display = 'block';
-        if (screen.width >= 768) {
+        if (document.documentElement.clientWidth >= 768) {
           popupAnimate = requestAnimationFrame(popupAppear);
         }
       });
@@ -89,33 +89,23 @@ window.addEventListener('DOMContentLoaded', () => {
     const menuLinks = document.querySelectorAll('menu li a'),
           firstScrollLink = document.querySelector('main a[href="#service-block"]');
 
-    menuLinks.forEach(link => {
-      link.addEventListener('click', event => {
-        event.preventDefault();
-
-        const block = document.querySelector(link.getAttribute('href')),
-              blockTop = block.getBoundingClientRect().top;
-
-        window.scrollTo({
-          left: 0,
-          top: blockTop + pageYOffset,
-          behavior: 'smooth'
-        });
-      });
-    });
-    
-    firstScrollLink.addEventListener('click', event => {
+    const smoothScrollTo = function(event) {
       event.preventDefault();
 
-      const block = document.querySelector('#service-block'),
-            blockTop = block.getBoundingClientRect().top;
+      const blockTop = document.querySelector(this.getAttribute('href')).getBoundingClientRect().top;
 
       window.scrollTo({
         left: 0,
         top: blockTop + pageYOffset,
         behavior: 'smooth'
       });
+    };
+
+    menuLinks.forEach(link => {
+      link.addEventListener('click', smoothScrollTo);
     });
+    
+    firstScrollLink.addEventListener('click', smoothScrollTo);
   };
 
   smoothScroll();
