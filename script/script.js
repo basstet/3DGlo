@@ -83,4 +83,40 @@ window.addEventListener('DOMContentLoaded', () => {
   };
 
   togglePopUp();
+
+  // smooth scroll:
+  const smoothScroll = () => {
+    const menuLinks = document.querySelectorAll('menu li a'),
+          firstScrollLink = document.querySelector('main a[href="#service-block"]');
+
+    menuLinks.forEach(link => {
+      link.addEventListener('click', event => {
+        event.preventDefault();
+
+        const block = document.querySelector(link.getAttribute('href')),
+              blockTop = block.getBoundingClientRect().top;
+
+        window.scrollTo({
+          left: 0,
+          top: blockTop + pageYOffset,
+          behavior: 'smooth'
+        });
+      });
+    });
+    
+    firstScrollLink.addEventListener('click', event => {
+      event.preventDefault();
+
+      const block = document.querySelector('#service-block'),
+            blockTop = block.getBoundingClientRect().top;
+
+      window.scrollTo({
+        left: 0,
+        top: blockTop + pageYOffset,
+        behavior: 'smooth'
+      });
+    });
+  };
+
+  smoothScroll();
 });
