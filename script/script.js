@@ -2,6 +2,7 @@
 window.addEventListener('DOMContentLoaded', () => {
   'use strict';
 
+  // таймер:
   const countTimer = deadline => {
     const timerHours = document.querySelector('#timer-hours'),
           timerMinutes = document.querySelector('#timer-minutes'),
@@ -14,7 +15,7 @@ window.addEventListener('DOMContentLoaded', () => {
             seconds = Math.floor(timeRemaining % 60),
             minutes = Math.floor((timeRemaining / 60) % 60),
             hours = Math.floor(timeRemaining / 60 / 60);
-      return { timeRemaining, hours, minutes, seconds };
+      return {timeRemaining, hours, minutes, seconds};
     };
     const updateClock = () => {
       const timer = getTimeRemaining();
@@ -29,4 +30,57 @@ window.addEventListener('DOMContentLoaded', () => {
   };
 
   countTimer('21 august 2021');
+
+  // меню:
+  const toggleMenu = () => {
+    const btnMenu = document.querySelector('.menu'),
+          menu = document.querySelector('menu'),
+          btnClose = document.querySelector('.close-btn'),
+          menuItems = menu.querySelectorAll('li');
+
+    const handlerMenu = () => {
+      menu.classList.toggle('active-menu');
+    };
+
+    btnMenu.addEventListener('click', handlerMenu);
+    btnClose.addEventListener('click', handlerMenu);
+    menuItems.forEach(elem => elem.addEventListener('click', handlerMenu));
+  };
+
+  toggleMenu();
+
+  // popup:
+  const togglePopUp = () => {
+    const popup = document.querySelector('.popup'),
+          popupContent = popup.querySelector('.popup-content'),
+          popupBtn = document.querySelectorAll('.popup-btn'),
+          popupClose = document.querySelector('.popup-close');
+    let popupAnimate,
+        count = 0;
+
+    const popupAppear = () => {
+      popupAnimate = requestAnimationFrame(popupAppear);
+      count++;
+      if (count < 11) {
+        popupContent.style.top = `${count}%`;
+      } else {
+        cancelAnimationFrame(popupAnimate);
+        count = 0;
+      }
+    };
+
+    popupBtn.forEach(elem => {
+      elem.addEventListener('click', () => {
+        popup.style.display = 'block';
+        if (screen.width >= 768) {
+          popupAnimate = requestAnimationFrame(popupAppear);
+        }
+      });
+    });
+    popupClose.addEventListener('click', () => {
+      popup.style.display = 'none';
+    });
+  };
+
+  togglePopUp();
 });
