@@ -58,7 +58,7 @@ window.addEventListener('DOMContentLoaded', () => {
   const togglePopUp = () => {
     const popup = document.querySelector('.popup'),
           popupContent = popup.querySelector('.popup-content'),
-          popupBtn = document.querySelectorAll('.popup-btn');
+          serviceBlock = document.querySelector('#service-block');
     let popupAnimate,
         count = 0;
 
@@ -73,13 +73,14 @@ window.addEventListener('DOMContentLoaded', () => {
       }
     };
 
-    popupBtn.forEach(elem => {
-      elem.addEventListener('click', () => {
-        popup.style.display = 'block';
-        if (document.documentElement.clientWidth >= 768) {
-          popupAnimate = requestAnimationFrame(popupAppear);
-        }
-      });
+    serviceBlock.addEventListener('click', event => {
+      if (!event.target.matches('.popup-btn')) {
+        return;
+      }
+      popup.style.display = 'block';
+      if (document.documentElement.clientWidth >= 768) {
+        popupAnimate = requestAnimationFrame(popupAppear);
+      }
     });
 
     popup.addEventListener('click', event => {
@@ -101,13 +102,10 @@ window.addEventListener('DOMContentLoaded', () => {
 
   // smooth scroll:
   const smoothScroll = () => {
-    const menuLinks = document.querySelectorAll('menu li a'),
-          firstScrollLink = document.querySelector('main a[href="#service-block"]');
+    let targetHref;
 
-    const smoothScrollTo = function(event) {
-      event.preventDefault();
-
-      const blockTop = document.querySelector(this.getAttribute('href')).getBoundingClientRect().top;
+    const smoothScrollTo = function() {
+      const blockTop = document.querySelector(targetHref).getBoundingClientRect().top;
 
       window.scrollTo({
         left: 0,
@@ -116,11 +114,22 @@ window.addEventListener('DOMContentLoaded', () => {
       });
     };
 
-    menuLinks.forEach(link => {
-      link.addEventListener('click', smoothScrollTo);
+    document.body.addEventListener('click', event => {
+      event.preventDefault();
+
+      let target = event.target;
+
+      if (target.closest('main a[href="#service-block"]')) {
+        target = target.closest('main a[href="#service-block"]');
+      }
+
+      targetHref = target.getAttribute('href');
+
+      if (!target.matches('menu li a') && !target.matches('main a[href="#service-block"]')) {
+        return;
+      }
+      smoothScrollTo();
     });
-    
-    firstScrollLink.addEventListener('click', smoothScrollTo);
   };
 
   smoothScroll();
