@@ -134,7 +134,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
   smoothScroll();
 
-  // табы "Наши услуги"
+  // табы "Наши услуги":
   const tabs = () => {
     const tabHeader = document.querySelector('.service-header'),
           tab = tabHeader.querySelectorAll('.service-header-tab'),
@@ -168,7 +168,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
   tabs();
 
-  // слайдер
+  // слайдер:
   const slider = () => {
     const slider = document.querySelector('.portfolio-content'),
           slide = document.querySelectorAll('.portfolio-item'),
@@ -269,4 +269,87 @@ window.addEventListener('DOMContentLoaded', () => {
   };
 
   slider();
+
+  // смена картинок при наведении в блоке "Наша команда":
+  const hoverImgChange = () => {
+    const command = document.getElementById('command');
+
+    command.addEventListener('mouseover', event => {
+      const target = event.target,
+            imgSrc = target.src;
+
+      if (!target.matches('img.command__photo')) {
+        return;
+      }
+      target.src = target.dataset.img;
+
+      target.addEventListener('mouseout', () => {
+        target.src = imgSrc;
+      });
+    });
+  };
+
+  hoverImgChange();
+
+  // валидация при заполнении полей форм:
+  const inputValidation = () => {
+    const formConnect = document.getElementById('form2');
+
+    document.body.addEventListener('input', event => {
+      const target = event.target;
+
+      if (!target.matches('input[type="text"], input[type="email"], input[type="tel"], input.mess')) {
+        return;
+      }
+      if (target.closest('#calc')) {
+        // поля калькулятора
+        target.value = target.value.replace(/\D/g, '');
+      }
+      if (target.closest('#form2')) {
+        // форма обратной связи
+        switch (true) {
+          case target.matches('input[type="text"]'):
+            // поле "Ваше имя"
+            target.value = target.value.replace(/[^а-яё\-\s]/gi, '');
+            break;
+          case target.matches('input.mess'):
+            // поле "Ваше сообщение"
+            target.value = target.value.replace(/[^а-яё\-\s.,:!?()]/gi, '');
+            break;
+          case target.matches('input[type="email"]'):
+            // поле "E-mail"
+            target.value = target.value.replace(/[^a-z\-@_.!~*']/gi, '');
+            break;
+          case target.matches('input[type="tel"]'):
+            // поле "Номер телефона"
+            target.value = target.value.replace(/[^\d\-()]/g, '');
+            break;
+        }
+      }
+    });
+
+    formConnect.addEventListener('blur', event => {
+      if (!event.target.matches('input')) {
+        return;
+      }
+
+      const target = event.target;
+      let inputValue = target.value;
+
+      inputValue = inputValue.trim();
+      inputValue = inputValue.replace(/\s{2,}/g, ' ');
+      inputValue = inputValue.replace(/-{2,}/g, '-');
+
+      if (target.matches('#form2-name')) {
+        inputValue = inputValue.replace(/[а-яё]+/gi, match => {
+          const name = match[0].toUpperCase() + match.slice(1).toLowerCase();
+          return name;
+        });
+      }
+
+      target.value = inputValue;
+    }, true);
+  };
+
+  inputValidation();
 });
