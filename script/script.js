@@ -279,10 +279,13 @@ window.addEventListener('DOMContentLoaded', () => {
           calcDay = document.querySelector('.calc-day'),
           totalValue = document.getElementById('total');
 
-    const countSum = () => {
+    // подсчет итоговой суммы:
+    const countSum = prevTotal => {
       let total = 0,
           countValue = 1,
-          dayValue = 1;
+          dayValue = 1,
+          totalDiff = 0,
+          count = 0;
       const typeValue = calcType.options[calcType.selectedIndex].value,
             squareValue = +calcSquare.value;
 
@@ -300,14 +303,34 @@ window.addEventListener('DOMContentLoaded', () => {
         total = price * typeValue * squareValue * countValue * dayValue;
       }
 
-      totalValue.textContent = total;
+      // эффект перебора цифр:
+      totalDiff = total - prevTotal;
+      count = totalDiff;
+      // (ограничила, чтобы не ждать долго, если разница большая)
+      if (Math.abs(totalDiff) < 300) {
+        const interval = setInterval(() => {
+          if (totalDiff > 0 && count > 0) {
+            totalValue.textContent = ++prevTotal;
+            count = totalDiff--;
+          } else if (totalDiff < 0 && count < 0) {
+            totalValue.textContent = --prevTotal;
+            count = totalDiff++;
+          } else {
+            clearInterval(interval);
+          }
+        }, (1 / totalDiff)); // (макс.скорость, интервал не уменьшается больше)
+      } else {
+        totalValue.textContent = total;
+      }
     };
 
+    // изменение "Итого" при изменении значения полей:
     calcBlock.addEventListener('change', event => {
       const target = event.target;
 
       if (target.matches('select, input')) {
-        countSum();
+        const prevTotal = +totalValue.textContent;
+        countSum(prevTotal);
       }
     });
   };
