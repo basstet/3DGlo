@@ -278,6 +278,8 @@ window.addEventListener('DOMContentLoaded', () => {
           calcCount = document.querySelector('.calc-count'),
           calcDay = document.querySelector('.calc-day'),
           totalValue = document.getElementById('total');
+    let animTotal,
+        isAnimate = false;
 
     // подсчет итоговой суммы:
     const countSum = prevTotal => {
@@ -306,22 +308,26 @@ window.addEventListener('DOMContentLoaded', () => {
       // эффект перебора цифр:
       totalDiff = total - prevTotal;
       count = totalDiff;
-      // (ограничила, чтобы не ждать долго, если разница большая)
-      if (Math.abs(totalDiff) < 300) {
-        const interval = setInterval(() => {
-          if (totalDiff > 0 && count > 0) {
-            totalValue.textContent = ++prevTotal;
-            count = totalDiff--;
-          } else if (totalDiff < 0 && count < 0) {
-            totalValue.textContent = --prevTotal;
-            count = totalDiff++;
-          } else {
-            clearInterval(interval);
-          }
-        }, (1 / totalDiff)); // (макс.скорость, интервал не уменьшается больше)
-      } else {
-        totalValue.textContent = total;
+      if (!isAnimate) {
+        cancelAnimationFrame(animTotal);
       }
+      isAnimate = true;
+
+      const changeTotal = () => {
+        animTotal = requestAnimationFrame(changeTotal);
+
+        if (isAnimate && totalDiff > 0 && count > 0) {
+          totalValue.textContent = ++prevTotal;
+          count = totalDiff--;
+        } else if (isAnimate && totalDiff < 0 && count < 0) {
+          totalValue.textContent = --prevTotal;
+          count = totalDiff++;
+        } else {
+          cancelAnimationFrame(animTotal);
+        }
+      };
+
+      animTotal = requestAnimationFrame(changeTotal);
     };
 
     // изменение "Итого" при изменении значения полей:
@@ -329,6 +335,7 @@ window.addEventListener('DOMContentLoaded', () => {
       const target = event.target;
 
       if (target.matches('select, input')) {
+        isAnimate = false;
         const prevTotal = +totalValue.textContent;
         countSum(prevTotal);
       }
