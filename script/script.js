@@ -115,8 +115,6 @@ window.addEventListener('DOMContentLoaded', () => {
     };
 
     document.body.addEventListener('click', event => {
-      event.preventDefault();
-
       let target = event.target;
 
       if (target.closest('main a[href="#service-block"]')) {
@@ -379,11 +377,11 @@ window.addEventListener('DOMContentLoaded', () => {
       target.value = target.value.replace(/\D/g, '');
     }
     switch (true) {
-      case target.matches('.form-name, #form2-name'):
+      case target.matches('input[name="user_name"]'):
         // поле "Ваше имя"
         target.value = target.value.replace(/[^а-яё\-\s]/gi, '');
         break;
-      case target.matches('input.mess'):
+      case target.matches('input[name="user_message"]'):
         // поле "Ваше сообщение"
         target.value = target.value.replace(/[^а-яё\-\s.,:!?()]/gi, '');
         break;
@@ -393,7 +391,7 @@ window.addEventListener('DOMContentLoaded', () => {
         break;
       case target.matches('input[type="tel"]'):
         // поле "Номер телефона"
-        target.value = target.value.replace(/[^\d\-()]/g, '');
+        target.value = target.value.replace(/[^\d+]/g, '');
         break;
     }
   };
@@ -432,21 +430,65 @@ window.addEventListener('DOMContentLoaded', () => {
     const errorMessage = `Что-то пошло не так...`,
           loadMessage = `Загрузка...`,
           successMessage = `Спасибо! Мы скоро с вами свяжемся!`,
-          form = document.getElementById('form1'),
+          form1 = document.getElementById('form1'),
+          form2 = document.getElementById('form2'),
+          form3 = document.getElementById('form3'),
           statusMessage = document.createElement('div');
 
-    statusMessage.style.cssText = 'font-size: 2rem;';
+    statusMessage.style.color = '#fff';
 
-    form.addEventListener('submit', event => {
-      event.preventDefault();
-      form.append(statusMessage);
-
+    // создание запроса и отправка данных на сервер:
+    const postData = (body, outputData, errorData) => {
       const request = new XMLHttpRequest();
+
+      request.addEventListener('readystatechange', () => {
+        if (request.readyState !== 4) {
+          return;
+        }
+        if (request.status === 200) {
+          outputData();
+        } else {
+          errorData(request.status);
+        }
+      });
+
       request.open('POST', './server.php');
-      request.setRequestHeader('Content-Type', 'multipart/form-data');
-      const formData = new FormData(form);
-      request.send(formData);
-    });
+      request.setRequestHeader('Content-Type', 'application/json');
+      request.send(JSON.stringify(body));
+    };
+
+    // отправка данных формы:
+    const submitForm = event => {
+      event.preventDefault();
+      const form = event.target;
+      
+      form.append(statusMessage);
+      statusMessage.textContent = loadMessage;
+
+      const formData = new FormData(form),
+            body = {};
+
+      formData.forEach((val, key) => {
+        body[key] = val;
+      });
+
+      postData(body, () => {
+        statusMessage.textContent = successMessage;
+        // очистить поля после отправки:
+        for (const elem of form.elements) {
+          if (elem.tagName.toLowerCase() !== 'button' && elem.type !== 'button') {
+            elem.value = '';
+          }
+        }
+      }, error => {
+        statusMessage.textContent = errorMessage;
+        console.error(error);
+      });
+    };
+
+    form1.addEventListener('submit', submitForm);
+    form2.addEventListener('submit', submitForm);
+    form3.addEventListener('submit', submitForm);
   };
 
   sendForm();
