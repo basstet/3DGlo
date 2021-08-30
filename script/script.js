@@ -173,7 +173,7 @@ window.addEventListener('DOMContentLoaded', () => {
     const slider = document.querySelector('.portfolio-content'),
           slide = document.querySelectorAll('.portfolio-item'),
           dots = document.querySelector('.portfolio-dots');
-          
+
     let currentSlide = 0,
         interval,
         dot;
@@ -426,4 +426,28 @@ window.addEventListener('DOMContentLoaded', () => {
   };
 
   validation();
+
+  // send ajax form:
+  const sendForm = () => {
+    const errorMessage = `Что-то пошло не так...`,
+          loadMessage = `Загрузка...`,
+          successMessage = `Спасибо! Мы скоро с вами свяжемся!`,
+          form = document.getElementById('form1'),
+          statusMessage = document.createElement('div');
+
+    statusMessage.style.cssText = 'font-size: 2rem;';
+
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      form.append(statusMessage);
+
+      const request = new XMLHttpRequest();
+      request.open('POST', './server.php');
+      request.setRequestHeader('Content-Type', 'multipart/form-data');
+      const formData = new FormData(form);
+      request.send(formData);
+    });
+  };
+
+  sendForm();
 });
