@@ -460,6 +460,9 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // отправка данных формы:
     const submitForm = event => {
+      if (!event.target.closest('form')) {
+        return;
+      }
       event.preventDefault();
       const form = event.target;
       
@@ -491,9 +494,7 @@ window.addEventListener('DOMContentLoaded', () => {
       });
     };
 
-    form1.addEventListener('submit', submitForm);
-    form2.addEventListener('submit', submitForm);
-    form3.addEventListener('submit', submitForm);
+    document.body.addEventListener('submit', submitForm);
   };
 
   sendForm();
