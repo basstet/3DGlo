@@ -126,6 +126,7 @@ window.addEventListener('DOMContentLoaded', () => {
       if (!target.matches('menu li a') && !target.matches('main a[href="#service-block"]')) {
         return;
       }
+      event.preventDefault();
       smoothScrollTo();
     });
   };
@@ -428,7 +429,6 @@ window.addEventListener('DOMContentLoaded', () => {
   // send ajax form:
   const sendForm = () => {
     const errorMessage = `Что-то пошло не так...`,
-          loadMessage = `Загрузка...`,
           successMessage = `Спасибо! Мы скоро с вами свяжемся!`,
           form1 = document.getElementById('form1'),
           form2 = document.getElementById('form2'),
@@ -436,6 +436,7 @@ window.addEventListener('DOMContentLoaded', () => {
           statusMessage = document.createElement('div');
 
     statusMessage.style.color = '#fff';
+    statusMessage.style.marginTop = '1rem';
 
     // создание запроса и отправка данных на сервер:
     const postData = (body, outputData, errorData) => {
@@ -463,7 +464,11 @@ window.addEventListener('DOMContentLoaded', () => {
       const form = event.target;
       
       form.append(statusMessage);
-      statusMessage.textContent = loadMessage;
+      // прелоадер:
+      statusMessage.innerHTML = `<div class="sk-double-bounce">
+        <div class="sk-child sk-double-bounce-1"></div>
+        <div class="sk-child sk-double-bounce-2"></div>
+      </div>`;
 
       const formData = new FormData(form),
             body = {};
@@ -473,7 +478,7 @@ window.addEventListener('DOMContentLoaded', () => {
       });
 
       postData(body, () => {
-        statusMessage.textContent = successMessage;
+        statusMessage.innerHTML = successMessage;
         // очистить поля после отправки:
         for (const elem of form.elements) {
           if (elem.tagName.toLowerCase() !== 'button' && elem.type !== 'button') {
@@ -481,7 +486,7 @@ window.addEventListener('DOMContentLoaded', () => {
           }
         }
       }, error => {
-        statusMessage.textContent = errorMessage;
+        statusMessage.innerHTML = errorMessage;
         console.error(error);
       });
     };
