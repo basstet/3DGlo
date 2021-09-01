@@ -430,16 +430,13 @@ window.addEventListener('DOMContentLoaded', () => {
   const sendForm = () => {
     const errorMessage = `Что-то пошло не так...`,
           successMessage = `Спасибо! Мы скоро с вами свяжемся!`,
-          form1 = document.getElementById('form1'),
-          form2 = document.getElementById('form2'),
-          form3 = document.getElementById('form3'),
           statusMessage = document.createElement('div');
 
     statusMessage.style.color = '#fff';
     statusMessage.style.marginTop = '1rem';
 
     // создание запроса и отправка данных на сервер:
-    const postData = (body, outputData, errorData) => {
+    const postData = body => new Promise((resolve, reject) => {
       const request = new XMLHttpRequest();
 
       request.addEventListener('readystatechange', () => {
@@ -447,16 +444,16 @@ window.addEventListener('DOMContentLoaded', () => {
           return;
         }
         if (request.status === 200) {
-          outputData();
+          resolve();
         } else {
-          errorData(request.status);
+          reject(request.status);
         }
       });
 
       request.open('POST', './server.php');
       request.setRequestHeader('Content-Type', 'application/json');
       request.send(JSON.stringify(body));
-    };
+    });
 
     // отправка данных формы:
     const submitForm = event => {
@@ -480,18 +477,20 @@ window.addEventListener('DOMContentLoaded', () => {
         body[key] = val;
       });
 
-      postData(body, () => {
-        statusMessage.innerHTML = successMessage;
-        // очистить поля после отправки:
-        for (const elem of form.elements) {
-          if (elem.tagName.toLowerCase() !== 'button' && elem.type !== 'button') {
-            elem.value = '';
+      postData(body)
+        .then(() => {
+          statusMessage.innerHTML = successMessage;
+          // очистить поля после отправки:
+          for (const elem of form.elements) {
+            if (elem.tagName.toLowerCase() !== 'button' && elem.type !== 'button') {
+              elem.value = '';
+            }
           }
-        }
-      }, error => {
-        statusMessage.innerHTML = errorMessage;
-        console.error(error);
-      });
+        })
+        .catch(error => {
+          statusMessage.innerHTML = errorMessage;
+          console.error(error);
+        });
     };
 
     document.body.addEventListener('submit', submitForm);
