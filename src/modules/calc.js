@@ -10,11 +10,10 @@ const calc = (price = 100) => {
       isAnimate = false;
 
   // подсчет итоговой суммы:
-  const countSum = prevTotal => {
+  const countSum = () => {
     let total = 0,
         countValue = 1,
         dayValue = 1,
-        totalDiff = 0,
         count = 0;
     const typeValue = calcType.options[calcType.selectedIndex].value,
           squareValue = +calcSquare.value;
@@ -34,8 +33,12 @@ const calc = (price = 100) => {
     }
 
     // эффект перебора цифр:
-    totalDiff = total - prevTotal;
-    count = totalDiff;
+    let risingTotal = 0;
+    const animSpeed = Math.floor(total / 60),
+          totalRemainder = total % 60;
+
+    count = total;
+
     if (!isAnimate) {
       cancelAnimationFrame(animTotal);
     }
@@ -44,12 +47,17 @@ const calc = (price = 100) => {
     const changeTotal = () => {
       animTotal = requestAnimationFrame(changeTotal);
 
-      if (isAnimate && totalDiff > 0 && count > 0) {
-        totalValue.textContent = ++prevTotal;
-        count = totalDiff--;
-      } else if (isAnimate && totalDiff < 0 && count < 0) {
-        totalValue.textContent = --prevTotal;
-        count = totalDiff++;
+      if (isAnimate && total > 0 && count > 0) {
+        if (count > totalRemainder) {
+          risingTotal += animSpeed * 1;
+          totalValue.textContent = risingTotal;
+          count -= animSpeed;
+        } else {
+          // когда счетчик меньше остатка от деления:
+          totalValue.textContent = total;
+          count = 0;
+          cancelAnimationFrame(animTotal);
+        }
       } else {
         cancelAnimationFrame(animTotal);
       }
@@ -64,8 +72,8 @@ const calc = (price = 100) => {
 
     if (target.matches('select, input')) {
       isAnimate = false;
-      const prevTotal = +totalValue.textContent;
-      countSum(prevTotal);
+      totalValue.textContent = '';
+      countSum();
     }
   });
 };
