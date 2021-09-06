@@ -9,6 +9,7 @@ import tabs from './modules/tabs';
 import slider from './modules/slider';
 import calc from './modules/calc';
 import hoverImgChange from './modules/hoverImgChange';
+import Validator from './modules/validator';
 import validation from './modules/validation';
 import sendForm from './modules/sendForm';
 
@@ -29,6 +30,6 @@ calc(100);
 // смена картинок при наведении в блоке "Наша команда":
 hoverImgChange();
 // валидация:
-validation();
+validation(Validator);
 // send ajax form:
 sendForm();
