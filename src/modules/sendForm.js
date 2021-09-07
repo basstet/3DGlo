@@ -24,6 +24,15 @@ const sendForm = () => {
     event.preventDefault();
     const form = event.target;
 
+    for (const elem of form.elements) {
+      if (elem.tagName.toLowerCase() !== 'button' && elem.type !== 'button') {
+        // не отправлять, пока есть хотя бы одно поле не success:
+        if (!elem.classList.contains('success')) {
+          return;
+        }
+      }
+    }
+
     form.append(statusMessage);
     // прелоадер:
     statusMessage.innerHTML = `<div class="sk-double-bounce">
