@@ -48,12 +48,17 @@ const sendForm = () => {
         for (const elem of form.elements) {
           if (elem.tagName.toLowerCase() !== 'button' && elem.type !== 'button') {
             elem.value = '';
+            elem.classList.remove('success');
           }
         }
       })
       .catch(error => {
         statusMessage.innerHTML = errorMessage;
         console.error(error);
+      })
+      .finally(() => {
+        // убрать сообщение через 3 секунды:
+        setTimeout(() => statusMessage.remove(), 3000);
       });
   };
 
